@@ -1,0 +1,7 @@
+name: ModeratorTools
+version: '1.0-SNAPSHOT'
+main: io.github.passengerstrain.ModeratorTools
+api-version: 1.21.5
+commands:
+  moderatortools:
+    permission: moderatortools.command.use
