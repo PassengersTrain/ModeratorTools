@@ -7,11 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class FreezePlayerCommand extends SubCommand {
 
-    private Utils utils;
+    private final Utils utils;
 
     public static Set<Player> frozenPlayers = new HashSet<>();
 
@@ -31,31 +32,47 @@ public class FreezePlayerCommand extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return "moderatortools freeze <player>";
+        return "moderatortools freeze <player> <reason>";
     }
 
     @Override
     public void executeCommand(Player player, String[] args) {
 
-        if(args.length > 1) {
-            Player suspectedPlayer = Bukkit.getPlayerExact(args[1]);
+        if(player.hasPermission("moderatortools.moderator.freezecommand")) {
+            if (args.length > 2) {
+                Player suspectedPlayer = Bukkit.getPlayerExact(args[1]);
 
-            frozenPlayers.add(suspectedPlayer);
+                String frozenReason = args[2];
 
-            final String frozenPlayerStaffMessage = utils.getLanguageConfig().getString("language.sendFrozenMessageToStaffPlayer");
+                frozenPlayers.add(suspectedPlayer);
 
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', frozenPlayerStaffMessage).replace(suspectedPlayer.getName(), "{suspected_player}"));
+                final String frozenPlayerStaffMessage = utils.getLanguageConfig().getString("language.sendFrozenMessageToStaffPlayer");
 
-            final boolean shouldBroadcastFrozenPlayerMessage = utils.getConfig().getBoolean("options.shouldBroadcastFrozenPlayerMessage");
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', frozenPlayerStaffMessage)
+                        .replace(suspectedPlayer.getName(), "{frozen_suspected_player}")
+                        .replace(frozenReason, "{frozen_punishment_reason}"));
 
-            if(shouldBroadcastFrozenPlayerMessage == true) {
-                final String frozenPlayerStaffMessageBroadcast = utils.getLanguageConfig().getString("language.broadcastFrozenPlayerMessage").replace(suspectedPlayer.getName(), "{suspected_player}");
+                final boolean shouldBroadcastFrozenPlayerMessage = utils.getConfig().getBoolean("options.shouldBroadcastFrozenPlayerStaffMessage");
 
-                for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if(onlinePlayer.hasPermission("moderatortools.moderation.broadcastmessage")) {
-                        onlinePlayer.sendMessage(frozenPlayerStaffMessageBroadcast);
+                if (shouldBroadcastFrozenPlayerMessage) {
+                    final String frozenPlayerStaffMessageBroadcast = utils.getLanguageConfig().getString("language.shouldBroadcastFrozenPlayerStaffMessage")
+                            .replace(suspectedPlayer.getName(), "{frozen_suspected_player}").
+                            replace(frozenReason, "{frozen_punishment_reason}");
+
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        if (onlinePlayer.hasPermission("moderatortools.moderator.frozenbroadcastmessage") && onlinePlayer != player) {
+                            onlinePlayer.sendMessage(frozenPlayerStaffMessageBroadcast);
+                        }
                     }
+
+                    final List<String> frozenPunishmentMessage = utils.getLanguageConfig().getStringList("language.frozenPunishmentPlayerMessage");
+                    suspectedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', String.valueOf(frozenPunishmentMessage)));
                 }
+            }
+        } else {
+            final String noPermission = utils.getLanguageConfig().getString("language.noPermission");
+            if (noPermission != null) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
             }
         }
     }
