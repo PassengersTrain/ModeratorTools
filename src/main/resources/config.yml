@@ -1,5 +1,6 @@
 options:
   consoleShouldPrintDebugMessage: false
   shouldPunishPlayerAddress: false
-  shouldBroadcastFrozenPlayerMessage: false
+  shouldBroadcastFrozenPlayerStaffMessage: false
+  shouldBroadcastUnFrozenPlayerStaffMessage: false
   defaultPunishPlayerAddressDuration: 60
