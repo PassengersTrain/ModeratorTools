@@ -1,6 +1,7 @@
 package io.github.passengerstrain.commands;
 
 import io.github.passengerstrain.commands.subcommands.FreezePlayerCommand;
+import io.github.passengerstrain.commands.subcommands.UnfreezePlayerCommand;
 import io.github.passengerstrain.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,6 +24,7 @@ public class CommandManager implements CommandExecutor {
 
     public CommandManager(){
         subcommands.add(new FreezePlayerCommand(utils));
+        subcommands.add(new UnfreezePlayerCommand(utils));
     }
 
     @Override
