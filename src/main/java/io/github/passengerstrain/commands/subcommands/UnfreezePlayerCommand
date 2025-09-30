@@ -1,0 +1,80 @@
+package io.github.passengerstrain.commands.subcommands;
+
+import io.github.passengerstrain.commands.SubCommand;
+import io.github.passengerstrain.utils.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+public class UnfreezePlayerCommand extends SubCommand {
+
+    private final Utils utils;
+
+    public UnfreezePlayerCommand(Utils utils) {
+        this.utils = utils;
+    }
+
+    @Override
+    public String getName() {
+        return "unfreeze";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Un-freeze the momentum of a player.";
+    }
+
+    @Override
+    public String getSyntax() {
+        return "moderatortools unfreeze <player> <reason>";
+    }
+
+    @Override
+    public void executeCommand(Player player, String[] args) {
+
+        if (player.hasPermission("moderatortools.moderator.unfreezecommand")) {
+            if(args.length > 2) {
+                Player frozenSuspectedPlayer = Bukkit.getPlayerExact(args[1]);
+
+                String unfreezePlayerReason = args[2];
+
+                if(FreezePlayerCommand.frozenPlayers.contains(frozenSuspectedPlayer)) {
+                    FreezePlayerCommand.frozenPlayers.remove(frozenSuspectedPlayer);
+
+                    final String unfrozenPlayerMessage = utils.getLanguageConfig().getString("language.sendUnFrozenMessageToPlayer");
+
+                    if (unfrozenPlayerMessage != null) {
+                        frozenSuspectedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', unfrozenPlayerMessage));
+                    }
+
+                    final String unfrozenPlayerStaffMessage = utils.getLanguageConfig().getString("language.sendUnFrozenMessageToStaffPlayer");
+
+                    if (unfrozenPlayerStaffMessage != null) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', unfrozenPlayerStaffMessage)
+                                .replace(frozenSuspectedPlayer.getName(), "{frozen_suspected_player}"
+                                        .replace(unfreezePlayerReason, "{unfrozen_punishment_reason}")));
+                    }
+
+                    final boolean shouldBroadcastUnFrozenPlayerMessage = utils.getConfig().getBoolean("options.shouldBroadcastUnFrozenPlayerStaffMessage");
+
+                    if (shouldBroadcastUnFrozenPlayerMessage) {
+                        final String frozenPlayerStaffMessageBroadcast = utils.getLanguageConfig().getString("language.broadcastUnFrozenPlayerStaffMessage")
+                                .replace(frozenSuspectedPlayer.getName(), "{frozen_suspected_player}").
+                                replace(unfreezePlayerReason, "{unfrozen_punishment_reason}");
+
+                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                            if (onlinePlayer.hasPermission("moderatortools.moderator.unfrozenbroadcastmessage") && onlinePlayer != player) {
+                                onlinePlayer.sendMessage(frozenPlayerStaffMessageBroadcast);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            final String noPermission = utils.getLanguageConfig().getString("language.noPermission");
+            if (noPermission != null) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
+            }
+        }
+    }
+}
