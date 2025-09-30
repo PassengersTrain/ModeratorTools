@@ -19,7 +19,7 @@ public class Utils {
 
     private FileConfiguration languageFileConfiguration;
 
-    private ModeratorTools plugin;
+    private final ModeratorTools plugin;
 
     public Utils(ModeratorTools plugin) {
     this.plugin = plugin;
@@ -81,7 +81,7 @@ public class Utils {
 
     public void sendDebugMessage(Level logLevel, String debugMessage) {
         boolean shouldPrintDebugMessage = fileConfiguration.getBoolean("options.consoleShouldPrintDebugMessage");
-        if(shouldPrintDebugMessage == true) {
+        if(shouldPrintDebugMessage) {
             System.out.println(logLevel + " " + debugMessage);
         }
     }
