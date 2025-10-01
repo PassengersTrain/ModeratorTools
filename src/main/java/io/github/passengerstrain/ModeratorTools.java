@@ -8,14 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 
 public final class ModeratorTools extends JavaPlugin {
-    private final Utils utils;
-
-    public ModeratorTools(Utils utils) {
-        this.utils = utils;
-    }
+    private Utils utils;
 
     @Override
     public void onEnable() {
+        this.utils = new Utils(this);
+
         utils.createConfigurationFile();
         utils.sendDebugMessage(Level.INFO, "Successfully loaded plugin configuration file.");
 
