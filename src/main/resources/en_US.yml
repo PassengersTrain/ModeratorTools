@@ -1,11 +1,11 @@
 language:
-  noPermission: "&cYou cannot execute this command."
-  insufficientCommandArgs: "&cYou have provided insufficient args for this command."
-  sendFrozenMessageToStaffPlayer: "&aYou have successfully frozen {frozen_suspected_player} for {frozen_punishment_reason}."
-  broadcastFrozenStaffPlayerMessage: "";
-  addressPunishmentTitle: "";
-  addressPunishmentSubTitle: "";
-  frozenPunishmentPlayerMessage: "";
-  broadcastUnFrozenPlayerStaffMessage: "";
-  sendUnFrozenMessageToStaffPlayer: "";
-  sendUnFrozenMessageToPlayer: "";
+  noPermission: ""
+  insufficientCommandArgs: ""
+  sendFrozenMessageToStaffPlayer: ""
+  broadcastFrozenStaffPlayerMessage: ""
+  addressPunishmentTitle: ""
+  addressPunishmentSubTitle: ""
+  frozenPunishmentPlayerMessage: ""
+  broadcastUnFrozenPlayerStaffMessage: ""
+  sendUnFrozenMessageToStaffPlayer: ""
+  sendUnFrozenMessageToPlayer: ""
