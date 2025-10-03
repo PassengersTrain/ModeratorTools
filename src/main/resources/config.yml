@@ -1,6 +1,6 @@
 options:
-  consoleShouldPrintDebugMessage: false
-  shouldPunishPlayerAddress: false
-  shouldBroadcastFrozenPlayerStaffMessage: false
-  shouldBroadcastUnFrozenPlayerStaffMessage: false
-  defaultPunishPlayerAddressDuration: 60
+  should-print-debug-message-to-console: false
+  should-punish-suspected-player-address: false
+  should-broadcast-message-to-staff: false
+  should-broadcast-punishment-removal-to-staff: false
+  default-address-punishment-duration: 60
