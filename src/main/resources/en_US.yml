@@ -1,11 +1,17 @@
 language:
-  noPermission: ""
-  insufficientCommandArgs: ""
-  sendFrozenMessageToStaffPlayer: ""
-  broadcastFrozenStaffPlayerMessage: ""
-  addressPunishmentTitle: ""
-  addressPunishmentSubTitle: ""
-  frozenPunishmentPlayerMessage: ""
-  broadcastUnFrozenPlayerStaffMessage: ""
-  sendUnFrozenMessageToStaffPlayer: ""
-  sendUnFrozenMessageToPlayer: ""
+  frozen-feature:
+    send-punishment-message-to-staff: "&aYou have frozen &c{one_frozen_suspected_player} &afor &c{one_frozen_punishment_reason}&a."
+    send-punishment-broadcast-message-to-staff: "&c{two_frozen_command_executor} &ahas frozen &c{two_frozen_suspected_player} &afor &c{two_frozen_punishment_reason}&a."
+    send-punishment-message-to-player: "&aYou have been frozen for &c{three_frozen_punishment_reason}&a."
+    player-address-punishment-title: "&cYou have been banned."
+    player-address-punishment-subtitle: "&7Please contact the server administrator for more information."
+
+  unfrozen-feature:
+    send-punishment-removal-message-to-staff: "&aYou have removed the previous punishment of &c{two_punishment_remove_of_suspected_player}."
+    send-punishment-removal-message: "&aYour previous punishment has been removed for &c{one_punishment_removal_reason}."
+    send-punishment-removal-broadcast-message-to-staff: "&c{three_un_frozen_suspected_player}''s &aprevious punishment of &c{three_un_frozen_punishment_removal_reason} &aby &c{three_un_frozen_command_executor}&a."
+
+  other:
+    no-permission: "&cYou cannot execute this command."
+    insufficient-command-args: "&cYou have provided insufficient syntax for this command."
+    non-player-command-execution: "&cOnly players can execute this command."
