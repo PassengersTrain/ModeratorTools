@@ -1,23 +1,31 @@
 package io.github.passengerstrain.commands.subcommands;
 
 import io.github.passengerstrain.commands.SubCommand;
-import io.github.passengerstrain.utils.Utils;
+import io.github.passengerstrain.utils.Config;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+/**
+ * A command that freezes a player, preventing any movement or momentum.
+ * Moderators with the appropriate permissions can execute this command and will
+ * receive notifications when a player is frozen. Additionally, the suspected player
+ * will receive a notification.
+ */
 
 public class FreezePlayerCommand extends SubCommand {
 
-    private final Utils utils;
+    @NonNull Config config;
 
     public static Set<Player> frozenPlayers = new HashSet<>();
 
-    public FreezePlayerCommand(Utils utils) {
-        this.utils = utils;
+    public FreezePlayerCommand(@NonNull Config config) {
+        this.config = config;
     }
 
     @Override
@@ -35,44 +43,47 @@ public class FreezePlayerCommand extends SubCommand {
         return "moderatortools freeze <player> <reason>";
     }
 
+    /**
+     * Freezes the suspected player, sends them a notification, and broadcasts the punishment message
+     * to all online staff, including the reason for the punishment. It also handles permission checks
+     * and message formatting.
+     *
+     * @param player The player executing the command.
+     * @param args   The arguments containing the suspected player to be frozen and the reason
+     *               for the punishment.
+     */
+
     @Override
     public void executeCommand(Player player, String[] args) {
+        if (player.hasPermission("moderatortools.moderator.freezecommand")) {
 
-        if(player.hasPermission("moderatortools.moderator.freezecommand")) {
             if (args.length > 2) {
-                Player suspectedPlayer = Bukkit.getPlayerExact(args[1]);
 
+                Player suspectedPlayer = Bukkit.getPlayerExact(args[1]);
                 String frozenReason = args[2];
 
                 frozenPlayers.add(suspectedPlayer);
 
-                final String frozenPlayerStaffMessage = utils.getLanguageConfig().getString("language.sendFrozenMessageToStaffPlayer");
+                final String frozenPlayerStaffMessage = config.getFrozenPunishmentStaffMessage(suspectedPlayer, frozenReason);
+                player.sendMessage(frozenPlayerStaffMessage);
 
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', frozenPlayerStaffMessage)
-                        .replace(suspectedPlayer.getName(), "{frozen_suspected_player}")
-                        .replace(frozenReason, "{frozen_punishment_reason}"));
+                if (config.shouldBroadcastPunishmentMessage()) {
 
-                final boolean shouldBroadcastFrozenPlayerMessage = utils.getConfig().getBoolean("options.shouldBroadcastFrozenPlayerStaffMessage");
-
-                if (shouldBroadcastFrozenPlayerMessage) {
-                    final String frozenPlayerStaffMessageBroadcast = utils.getLanguageConfig().getString("language.shouldBroadcastFrozenPlayerStaffMessage")
-                            .replace(suspectedPlayer.getName(), "{frozen_suspected_player}").
-                            replace(frozenReason, "{frozen_punishment_reason}");
-
+                    final String frozenPlayerStaffMessageBroadcast = config.getFrozenPunishmentBroadcastMessage(suspectedPlayer, player, frozenReason);
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         if (onlinePlayer.hasPermission("moderatortools.moderator.frozenbroadcastmessage") && onlinePlayer != player) {
                             onlinePlayer.sendMessage(frozenPlayerStaffMessageBroadcast);
                         }
                     }
 
-                    final List<String> frozenPunishmentMessage = utils.getLanguageConfig().getStringList("language.frozenPunishmentPlayerMessage");
-                    suspectedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', String.valueOf(frozenPunishmentMessage)));
+                    final String frozenPlayerMessage = config.getFrozenPunishmentPlayerMessage(suspectedPlayer, frozenReason);
+                    suspectedPlayer.sendMessage(frozenPlayerMessage);
                 }
-            }
-        } else {
-            final String noPermission = utils.getLanguageConfig().getString("language.noPermission");
-            if (noPermission != null) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
+            } else {
+                final String noPermission = config.getNoPermissionMessage();
+                if (noPermission != null) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
+                }
             }
         }
     }
