@@ -8,21 +8,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Utils {
 
-    private File file;
-
     private FileConfiguration fileConfiguration;
-
-    private File languageFile;
 
     private FileConfiguration languageFileConfiguration;
 
     private final ModeratorTools plugin;
 
     public Utils(ModeratorTools plugin) {
-    this.plugin = plugin;
+        this.plugin = plugin;
     }
 
     public FileConfiguration getConfig() {
@@ -34,22 +31,22 @@ public class Utils {
     }
 
     public void createConfigurationFile() {
-        file = new File(plugin.getDataFolder(), "config.yml");
+        File file = new File(plugin.getDataFolder(), "config.yml");
         if (!file.exists()) {
             file.getParentFile().mkdirs();
-            plugin.saveResource("config.yml", false);
+                plugin.saveResource("config.yml", false);
         }
 
         fileConfiguration = new YamlConfiguration();
         try {
             fileConfiguration.load(file);
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            sendDebugMessage(Level.SEVERE, e.getMessage());
         }
     }
 
     public void createLanguageFile() {
-        languageFile = new File(plugin.getDataFolder(), "en_US.yml");
+        File languageFile = new File(plugin.getDataFolder(), "en_US.yml");
         if (!languageFile.exists()) {
             languageFile.getParentFile().mkdirs();
             plugin.saveResource("en_US.yml", false);
@@ -59,31 +56,15 @@ public class Utils {
         try {
             languageFileConfiguration.load(languageFile);
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveConfigFile() {
-        try {
-            fileConfiguration.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void saveLanguageFile() {
-        try {
-            languageFileConfiguration.save(languageFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            sendDebugMessage(Level.SEVERE, e.getMessage());
         }
     }
 
     public void sendDebugMessage(Level logLevel, String debugMessage) {
-        boolean shouldPrintDebugMessage = fileConfiguration.getBoolean("options.consoleShouldPrintDebugMessage");
-        if(shouldPrintDebugMessage) {
-            System.out.println(logLevel + " " + debugMessage);
+        boolean shouldPrintDebugMessage = fileConfiguration.getBoolean("options.should-print-debug-message-to-console");
+        if (shouldPrintDebugMessage) {
+            Logger pluginLogger = plugin.getLogger();
+            pluginLogger.log(logLevel, debugMessage);
         }
     }
-
 }
