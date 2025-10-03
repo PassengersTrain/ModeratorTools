@@ -1,7 +1,7 @@
 package io.github.passengerstrain.listeners;
 
 import io.github.passengerstrain.commands.subcommands.FreezePlayerCommand;
-import io.github.passengerstrain.utils.Utils;
+import io.github.passengerstrain.utils.Config;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -20,10 +20,10 @@ import java.util.Date;
 
 public class PlayerListener implements Listener {
 
-    private final Utils utils;
+    private final Config config;
 
-    public PlayerListener(Utils utils) {
-        this.utils = utils;
+    public PlayerListener(Config config) {
+        this.config = config;
     }
 
     @EventHandler
@@ -91,19 +91,20 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
 
         if(FreezePlayerCommand.frozenPlayers.contains(player)) {
-            final boolean punishFrozenPlayerAddress = utils.getConfig().getBoolean("options.shouldPunishPlayerAddress");
-            if(punishFrozenPlayerAddress) {
-                final String addressPunishmentTitle = utils.getLanguageConfig().getString("language.addressPunishmentTitle");
-                final String addressPunishmentSubTitle = utils.getLanguageConfig().getString("language.addressPunishmentSubTitle");
-                final int addressPunishmentDuration = utils.getConfig().getInt("options.defaultPunishPlayerAddressDuration");
+
+            if(config.shouldPunishPlayerAddress()) {
+
+                final String addressPunishmentTitle = config.getAddressPunishmentTitle();
+
+                final String addressPunishmentSubTitle = config.getAddressPunishmentSubTitle();
+
+                final int addressPunishmentDuration = config.getDefaultPunishmentDuration();
+
                 final Date addressPunishmentExpiration = new Date(System.currentTimeMillis() + addressPunishmentDuration * 60L * 1000L);
 
                 Bukkit.getBanList(BanList.Type.IP).addBan(player.getAddress().getAddress().getHostAddress(), addressPunishmentTitle, addressPunishmentExpiration, addressPunishmentSubTitle);
             }
         }
-
         FreezePlayerCommand.frozenPlayers.remove(player);
-
     }
-
 }
